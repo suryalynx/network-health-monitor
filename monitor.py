@@ -17,9 +17,15 @@ os.makedirs(log_dir, exist_ok=True)
 cpu = psutil.cpu_percent(interval=1)
 ram = psutil.virtual_memory().available // 1024
 try:
-    disk = psutil.disk_usage('C:\\').free
-except:
-    disk = psutil.disk_usage('/').free
+    partitions = psutil.disk_partitions()
+    for p in partitions:
+        if 'fixed' in p.opts.lower():
+            disk = psutil.disk_usage(p.mountpoint).free
+            break
+    else:
+        disk = 0
+except Exception as e:
+    disk = 0
 ping_status = ping("google.com")
 av_status = "Unknown"  # Optional: Extend with AV check using WMI
 
